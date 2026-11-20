@@ -1,0 +1,17 @@
+REGRESI LINEAR TANPA X2 (MODEL PEMBANDING): Monetary_Value ~ Total_Purchases + Recency_Days
+
+Call: lm(formula = Monetary_Value ~ Total_Purchases + Recency_Days)
+
+Coefficients:
+                  Estimate Std. Error t value Pr(>|t|)  Std.Err HC1 Pr(>|t|) HC1
+  (Intercept)                 28.3217     3.6977     7.66 1.89e-14       6.6596 2.11e-05
+  Total_Purchases            109.2771     3.3178    32.94 1.4e-236       6.3198 6.95e-67
+  Recency_Days                 0.0046     0.0046     1.01 0.313          0.0050 0.353
+
+Residual standard error: 216.4317 on 95417 degrees of freedom
+Multiple R-squared: 0.011242, Adjusted R-squared: 0.011222
+F-statistic: 542.5 on 2 and 95417 DF, p-value: 5.56e-235
+
+Catatan: dihitung dengan OLS Python (numpy) di VM ini karena R tidak tersedia;
+angka diverifikasi cocok dengan output R untuk model Y~X1 dan Y~X1+X2+X3
+sampai 4 desimal. Jalankan ulang R/analysis.R di RStudio untuk output R asli.

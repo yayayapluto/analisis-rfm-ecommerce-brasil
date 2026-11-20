@@ -1,0 +1,17 @@
+REGRESI LOG(Y) TANPA X2: log(Monetary_Value) ~ Total_Purchases + Recency_Days
+
+Call: lm(formula = log(Monetary_Value) ~ Total_Purchases + Recency_Days)
+
+Coefficients:
+                  Estimate Std. Error t value Pr(>|t|)  Std.Err HC1 Pr(>|t|) HC1
+  (Intercept)                  3.8283     0.0159   240.80 0              0.0309 0
+  Total_Purchases              0.6298     0.0143    44.15 0              0.0293 1.49e-102
+  Recency_Days                -0.0000     0.0000    -1.60 0.11           0.0000 0.118
+
+Residual standard error: 0.9305 on 95417 degrees of freedom
+Multiple R-squared: 0.020087, Adjusted R-squared: 0.020066
+F-statistic: 978.0 on 2 and 95417 DF, p-value: 0
+
+Catatan: dihitung dengan OLS Python (numpy) di VM ini karena R tidak tersedia;
+angka diverifikasi cocok dengan output R untuk model Y~X1 dan Y~X1+X2+X3
+sampai 4 desimal. Jalankan ulang R/analysis.R di RStudio untuk output R asli.

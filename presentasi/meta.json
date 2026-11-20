@@ -1,0 +1,13 @@
+{
+  "title": "Analisis Regresi Monetary Value pada E-Commerce Brasil",
+  "description": "Deck 12 slide analisis regresi Monetary_Value pada dataset e-commerce Brasil: deskriptif, korelasi Pearson, regresi sederhana dan berganda, evaluasi asumsi, prediksi, dan demo RStudio.",
+  "type": "presentation",
+  "primary_output": "presentasi-rfm.pptx",
+  "outputs": [
+    {"kind": "pptx", "path": "presentasi-rfm.pptx"},
+    {"kind": "pdf", "path": "presentasi-rfm.pdf"}
+  ],
+  "slide_count": 12,
+  "thumbnail": ".src/validate/page-01.png",
+  "status": "complete"
+}
