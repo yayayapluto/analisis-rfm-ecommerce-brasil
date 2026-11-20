@@ -1,0 +1,19 @@
+Brazil E-commerce Orders Dataset
+Owner: mehmetisik
+URL Kaggle: https://www.kaggle.com/datasets/mehmetisik/order-customerrfm
+Lisensi: Unknown (tidak tercantum pada halaman Kaggle)
+Tanggal pembaruan: 2023-06-09T07:17:24.663000
+Jumlah baris transaksi order-item: 112.650
+Order unik: 98.666
+Jumlah kolom berkas mentah: 4
+Jumlah pelanggan unik: 95.420
+Jumlah kolom tabel agregat: 5
+Jumlah baris awal setelah agregasi: 95.420
+Tanggal referensi recency: 2018-09-03
+Deskripsi: Transaksi e-commerce Brasil berupa order_id, customer_unique_id, order_purchase_timestamp, dan price. Variabel model dibentuk per pelanggan dari transaksi tersebut.
+Variabel model: Y = Monetary_Value; X1 = Total_Purchases; X2 = Average_Order_Value; X3 = Recency_Days
+Jumlah baris setelah complete.cases: 95.420
+Jumlah baris dibuang karena NA: 0
+Jumlah baris duplikat dibuang: 0
+Jumlah baris final: 95.420
+Total baris dibuang: 0
