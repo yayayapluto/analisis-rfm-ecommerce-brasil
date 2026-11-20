@@ -35,6 +35,10 @@ if (length(kolom_hilang) > 0) {
 data_order$tanggal <- as.Date(data_order$order_purchase_timestamp)
 tanggal_referensi <- max(data_order$tanggal)
 
+cat("\nStruktur data mentah:\n")
+print(utils::str(data_order))
+cat("\nTipe tiap kolom:\n")
+print(sapply(data_order, class))
 cat("Baris transaksi order-item:", nrow(data_order), "\n")
 cat("Order unik:", length(unique(data_order$order_id)), "\n")
 cat("Pelanggan unik:", length(unique(data_order$customer_unique_id)), "\n")
@@ -204,6 +208,16 @@ print(round(matriks_korelasi, 4))
 write.csv(matriks_korelasi, "output/tables/korelasi.csv", row.names = TRUE)
 cat("Tersimpan: output/tables/korelasi.csv\n")
 
+cat("\nKorelasi Spearman (pembanding Pearson, tahan terhadap outlier)\n")
+matriks_spearman <- stats::cor(
+  data_bersih[, kolom_model, drop = FALSE],
+  use = "complete.obs",
+  method = "spearman"
+)
+print(round(matriks_spearman, 4))
+write.csv(matriks_spearman, "output/tables/korelasi_spearman.csv", row.names = TRUE)
+cat("Tersimpan: output/tables/korelasi_spearman.csv\n")
+
 cat("\nScatter plot\n")
 pasangan_scatter <- list(
   list(
@@ -299,6 +313,52 @@ r2_adjusted <- summary(model_berganda)$adj.r.squared
 cat(sprintf("R-squared model berganda: %.6f\n", r2_berganda))
 cat(sprintf("R-squared adjusted model berganda: %.6f\n", r2_adjusted))
 
+cat("\nModel pembanding tanpa X2 (bukti identitas aljabar)\n")
+cat("X2 = Y / X1, jadi R-squared tinggi model berganda bisa berasal dari\n")
+cat("definisi X2, bukan kemampuan prediksi. Model Y ~ X1 + X3 menguji ini.\n")
+model_tanpa_x2 <- lm(
+  Monetary_Value ~ Total_Purchases + Recency_Days,
+  data = data_bersih
+)
+ringkasan_tanpa_x2 <- capture.output(print(summary(model_tanpa_x2)))
+cat(ringkasan_tanpa_x2, sep = "\n")
+cat("\n")
+cat(sprintf(
+  "R-squared model tanpa X2: %.6f (bandingkan dengan %.6f model berganda)\n",
+  summary(model_tanpa_x2)$r.squared, r2_berganda
+))
+writeLines(
+  c(
+    "REGRESI LINEAR TANPA X2 (MODEL PEMBANDING)",
+    "Formula: Monetary_Value ~ Total_Purchases + Recency_Days",
+    "Tujuan: menguji apakah kenaikan R-squared model berganda berasal",
+    "dari X2, yang didefinisikan sebagai Y / X1.",
+    "",
+    ringkasan_tanpa_x2
+  ),
+  "output/tables/regresi_tanpa_x2.txt"
+)
+cat("Tersimpan: output/tables/regresi_tanpa_x2.txt\n")
+
+cat("\nModel log(Y) sebagai pemeriksaan sensitivitas asumsi\n")
+model_log <- lm(
+  log(Monetary_Value) ~ Total_Purchases + Recency_Days,
+  data = data_bersih
+)
+ringkasan_log <- capture.output(print(summary(model_log)))
+cat(ringkasan_log, sep = "\n")
+cat("\n")
+writeLines(
+  c(
+    "REGRESI LOG(Y) TANPA X2",
+    "Formula: log(Monetary_Value) ~ Total_Purchases + Recency_Days",
+    "",
+    ringkasan_log
+  ),
+  "output/tables/regresi_log.txt"
+)
+cat("Tersimpan: output/tables/regresi_log.txt\n")
+
 cat("\nUji asumsi\n")
 nilai_vif <- car::vif(model_berganda)
 teks_vif <- capture.output(print(nilai_vif))
@@ -343,6 +403,27 @@ writeLines(
   "output/tables/uji_asumsi.txt"
 )
 cat("Tersimpan: output/tables/uji_asumsi.txt\n")
+
+cat("\nGalat baku robust HC1 untuk model berganda (base R, tanpa paket baru)\n")
+X_mat <- stats::model.matrix(model_berganda)
+resid_b <- stats::residuals(model_berganda)
+XtX_inv <- solve(crossprod(X_mat))
+meat <- crossprod(X_mat, X_mat * resid_b^2)
+cov_hc1 <- XtX_inv %*% meat %*% XtX_inv * nrow(X_mat) / (nrow(X_mat) - ncol(X_mat))
+se_hc1 <- sqrt(diag(cov_hc1))
+t_hc1 <- stats::coef(model_berganda) / se_hc1
+p_hc1 <- 2 * stats::pt(abs(t_hc1), df = nrow(X_mat) - ncol(X_mat), lower.tail = FALSE)
+tabel_hc1 <- data.frame(
+  prediktor = names(stats::coef(model_berganda)),
+  estimasi = stats::coef(model_berganda),
+  se_robust_hc1 = se_hc1,
+  t_robust = t_hc1,
+  p_robust = p_hc1,
+  row.names = NULL
+)
+print(tabel_hc1, row.names = FALSE)
+write.csv(tabel_hc1, "output/tables/uji_asumsi_robust.csv", row.names = FALSE)
+cat("Tersimpan: output/tables/uji_asumsi_robust.csv\n")
 
 cat("\nPrediksi tiga skenario\n")
 kuantil_x1 <- stats::quantile(

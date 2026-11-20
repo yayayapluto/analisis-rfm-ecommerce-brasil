@@ -161,6 +161,10 @@ Script memakai base R untuk agregasi, pembacaan, dan penulisan CSV, `ggplot2` un
 | `output/tables/regresi_berganda.txt` | Ringkasan model `Y ~ X1 + X2 + X3`. |
 | `output/tables/uji_asumsi.txt` | Hasil VIF, Shapiro-Wilk, dan Breusch-Pagan. |
 | `output/tables/prediksi.csv` | Skenario `total_purchases`, `average_order_value`, `recency_days`, prediksi, dan batas interval 95 persen. |
+| `output/tables/korelasi_spearman.csv` | Matriks korelasi Spearman untuk Y, X1, X2, X3 (pembanding Pearson). |
+| `output/tables/regresi_tanpa_x2.txt` | Ringkasan model pembanding `Y ~ X1 + X3` (R² 0,0112). |
+| `output/tables/regresi_log.txt` | Ringkasan model `log(Y) ~ X1 + X3` (R² 0,0201). |
+| `output/tables/uji_asumsi_robust.csv` | Galat baku robust HC1 untuk model berganda. |
 | `output/tables/provenance.txt` | Sumber, lisensi, metadata, dan ringkasan baris. |
 | `output/analisis_log.txt` | Log lengkap eksekusi script R. |
 | `data/processed/order_customer_clean.csv` | Tabel pelanggan hasil agregasi dan penyaringan, 95.420 baris. |
