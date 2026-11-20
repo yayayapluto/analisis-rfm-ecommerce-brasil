@@ -1,0 +1,5 @@
+_scratch/
+*.log
+.Rhistory
+.RData
+.Rproj.user/
