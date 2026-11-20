@@ -11,11 +11,14 @@ header-includes:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.align = "center")
 suppressPackageStartupMessages(library(car))
+suppressPackageStartupMessages(library(lmtest))
 
 df <- read.csv("../data/processed/order_customer_clean.csv", stringsAsFactors = FALSE)
 desc <- read.csv("../output/tables/statistik_deskriptif.csv", stringsAsFactors = FALSE)
 korelasi <- read.csv("../output/tables/korelasi.csv", check.names = FALSE, row.names = 1)
 prediksi <- read.csv("../output/tables/prediksi.csv", stringsAsFactors = FALSE)
+spearman <- read.csv("../output/tables/korelasi_spearman.csv", check.names = FALSE, row.names = 1)
+robust <- read.csv("../output/tables/uji_asumsi_robust.csv", stringsAsFactors = FALSE)
 uji_raw <- readLines("../output/tables/uji_asumsi.txt", warn = FALSE)
 prov_raw <- readLines("../output/tables/provenance.txt", warn = FALSE)
 log_raw <- readLines("../output/analisis_log.txt", warn = FALSE)
@@ -58,6 +61,20 @@ model_berganda <- lm(
 )
 ring_sederhana <- summary(model_sederhana)
 ring_berganda <- summary(model_berganda)
+
+model_tanpa_x2 <- lm(Monetary_Value ~ Total_Purchases + Recency_Days, data = df)
+model_log <- lm(log(Monetary_Value) ~ Total_Purchases + Recency_Days, data = df)
+ring_tanpa_x2 <- summary(model_tanpa_x2)
+ring_log <- summary(model_log)
+
+r2_tanpa_x2 <- ring_tanpa_x2$r.squared
+b0_tanpa_x2 <- coef(model_tanpa_x2)["(Intercept)"]
+b1_tanpa_x2 <- coef(model_tanpa_x2)["Total_Purchases"]
+b3_tanpa_x2 <- coef(model_tanpa_x2)["Recency_Days"]
+p3_tanpa_x2 <- ring_tanpa_x2$coefficients["Recency_Days", 4]
+r2_log <- ring_log$r.squared
+p3_log <- ring_log$coefficients["Recency_Days", 4]
+bp_log <- as.numeric(lmtest::bptest(model_log)$statistic)
 
 r2_sederhana <- ring_sederhana$r.squared
 r2_berganda <- ring_berganda$r.squared
@@ -110,6 +127,15 @@ korelasi_tampil <- data.frame(
   check.names = FALSE
 )
 
+spearman_tampil <- data.frame(
+  Variabel = unname(label_var[rownames(spearman)]),
+  Y = fmt(spearman[, "Monetary_Value"], 3),
+  X1 = fmt(spearman[, "Total_Purchases"], 3),
+  X2 = fmt(spearman[, "Average_Order_Value"], 3),
+  X3 = fmt(spearman[, "Recency_Days"], 3),
+  check.names = FALSE
+)
+
 koef_tampil <- data.frame(
   Model = c("Sederhana", "Sederhana", "Berganda", "Berganda", "Berganda", "Berganda"),
   Prediktor = c(
@@ -131,6 +157,33 @@ koef_tampil <- data.frame(
     fmt_p(ring_berganda$coefficients["(Intercept)", 4]),
     fmt_p(p1), fmt_p(p2), fmt_p(p3)
   ),
+  check.names = FALSE
+)
+
+tanpa_x2_tampil <- data.frame(
+  Prediktor = c("Intercept", "X1: Total Purchases", "X3: Recency Days"),
+  Estimasi = fmt(c(b0_tanpa_x2, b1_tanpa_x2, b3_tanpa_x2), 3),
+  `Galat baku` = fmt(c(
+    ring_tanpa_x2$coefficients["(Intercept)", 2],
+    ring_tanpa_x2$coefficients["Total_Purchases", 2],
+    ring_tanpa_x2$coefficients["Recency_Days", 2]
+  ), 3),
+  p = c(
+    fmt_p(ring_tanpa_x2$coefficients["(Intercept)", 4]),
+    fmt_p(ring_tanpa_x2$coefficients["Total_Purchases", 4]),
+    fmt_p(p3_tanpa_x2)
+  ),
+  check.names = FALSE
+)
+
+robust_tampil <- data.frame(
+  Prediktor = c(
+    "Intercept", "X1: Total Purchases",
+    "X2: Average Order Value", "X3: Recency Days"
+  ),
+  Estimasi = fmt(robust$estimasi, 3),
+  `Galat baku robust HC1` = fmt(robust$se_robust_hc1, 3),
+  `p robust` = fmt(robust$p_robust, 3),
   check.names = FALSE
 )
 
@@ -257,6 +310,23 @@ Korelasi antar prediktor tetap kecil. `Total_Purchases` dengan
 `r fmt(korelasi["Total_Purchases", "Recency_Days"], 3)`. Nilai ini menjadi
 indikasi awal bahwa multikolinearitas tidak berat.
 
+Korelasi Spearman pada Tabel 4.2 memakai urutan, bukan nilai asli, sehingga
+tahan terhadap outlier dan menjadi pembanding Pearson karena
+`Monetary_Value` sangat timpang ke kanan.
+
+```{r}
+knitr::kable(
+  spearman_tampil,
+  caption = "Tabel 4.2 Matriks korelasi Spearman",
+  align = c("l", "r", "r", "r", "r")
+)
+```
+
+Kesimpulannya sama dengan Pearson: Y–X2 paling kuat sebesar
+`r fmt(spearman["Monetary_Value", "Average_Order_Value"], 3)`, Y–X1 lemah
+sebesar `r fmt(spearman["Monetary_Value", "Total_Purchases"], 3)`, dan Y–X3
+hampir nol sebesar `r fmt(spearman["Monetary_Value", "Recency_Days"], 3)`.
+
 ```{r, fig.cap="Gambar 4.1 Total Purchases terhadap Monetary Value", out.width="75%"}
 knitr::include_graphics("../output/plots/scatter_purchases_y.png")
 ```
@@ -306,6 +376,25 @@ Koefisien X1 pada model berganda sebesar `r fmt(b1, 3)` dan koefisien X2 sebesar
 menunjukkan arah asosiasi bersyarat yang lemah setelah X1 dan X2 dikendalikan.
 Hubungan ini bukan sebab akibat.
 
+### Model pembanding tanpa X2
+
+Untuk membuktikan bahwa kenaikan R-squared model berganda berasal dari
+definisi X2, ditaksir model `Y ~ X1 + X3` tanpa X2.
+
+```{r}
+knitr::kable(
+  tanpa_x2_tampil,
+  caption = "Tabel 5.2 Koefisien model pembanding tanpa X2",
+  align = c("l", "r", "r", "l")
+)
+```
+
+R-squared model pembanding sebesar `r fmt(r2_tanpa_x2, 4)` — praktis sama
+dengan model sederhana (`r fmt(r2_sederhana, 4)`) dan jauh dari
+`r fmt(r2_berganda, 4)`. X3 tetap tidak signifikan dengan p-value
+`r fmt(p3_tanpa_x2, 3)`. Jadi seluruh lompatan R-squared model berganda
+berasal dari X2 yang didefinisikan sebagai `Y / X1`.
+
 # Bab 6 Evaluasi Model dan Uji Asumsi
 
 Tabel 6.1 memuat nilai VIF dari `output/tables/uji_asumsi.txt`. Seluruh nilai
@@ -336,8 +425,25 @@ knitr::include_graphics("../output/plots/qq_plot.png")
 
 Kedua pelanggaran asumsi dinyatakan terbuka. Standar error konvensional dapat
 meleset, sehingga uji t, statistik F, dan interval kepercayaan perlu dibaca
-dengan hati-hati. Laporan ini tidak menjalankan robust standard error,
-transformasi, atau bootstrap.
+dengan hati-hati. Sebagai pemeriksaan, Tabel 6.2 memuat galat baku robust HC1
+untuk model berganda: X1 dan X2 tetap signifikan, sedangkan X3 tetap tidak
+signifikan (p-robust `r fmt(robust$p_robust[4], 3)`), sehingga kesimpulan
+model tidak berubah.
+
+```{r}
+knitr::kable(
+  robust_tampil,
+  caption = "Tabel 6.2 Galat baku robust HC1 model berganda",
+  align = c("l", "r", "r", "l")
+)
+```
+
+Sebagai pemeriksaan sensitivitas, model `log(Y) ~ X1 + X3` menghasilkan
+R-squared `r fmt(r2_log, 4)` dan pelanggaran asumsi yang jauh lebih ringan
+(Breusch-Pagan LM `r fmt(bp_log, 1)` dibanding `r fmt(bp, 0)` pada model
+linear; residual lebih dekat ke normal), tetapi asumsi tetap ditolak secara
+statistik dan X3 tetap tidak signifikan (p-value `r fmt(p3_log, 3)`).
+Transformasi log memperbaiki, bukan menyelesaikan, pelanggaran asumsi.
 
 # Bab 7 Prediksi
 
@@ -379,7 +485,8 @@ Model sederhana menjelaskan `r fmt(r2_sederhana * 100, 2)` persen variasi
 `Monetary_Value`. Model berganda menjelaskan `r fmt(r2_berganda * 100, 2)`
 persen. Selisihnya sekitar `r fmt((r2_berganda - r2_sederhana) * 100, 2)` poin
 persentase, tetapi sebagian besar kenaikan itu berasal dari cara X2 diturunkan
-dari Y.
+dari Y. Model pembanding tanpa X2 menegaskan hal itu: R-squared-nya
+`r fmt(r2_tanpa_x2, 4)`, praktis sama dengan model sederhana.
 
 Keterbatasan utama adalah pelanggaran normalitas dan homoskedastisitas residual,
 serta ketergantungan aljabar antara respons dan X2. Selain itu, dataset berasal
@@ -394,8 +501,10 @@ Berkas keluaran yang dipakai dalam laporan ini:
 - `output/analisis_log.txt` berisi log pembacaan data, agregasi, penyaringan,
   dan seluruh tahap analisis.
 - `output/tables/provenance.txt`, `statistik_deskriptif.csv`, `korelasi.csv`,
-  `regresi_sederhana.txt`, `regresi_berganda.txt`, `uji_asumsi.txt`, dan
-  `prediksi.csv` berisi tabel serta ringkasan numerik.
+  `korelasi_spearman.csv`, `regresi_sederhana.txt`, `regresi_berganda.txt`,
+  `regresi_tanpa_x2.txt`, `regresi_log.txt`, `uji_asumsi.txt`,
+  `uji_asumsi_robust.csv`, dan `prediksi.csv` berisi tabel serta ringkasan
+  numerik.
 - `output/plots/hist_y.png`, `box_y.png`, `scatter_purchases_y.png`,
   `scatter_order_value_y.png`, `scatter_recency_y.png`,
   `residual_vs_fitted.png`, dan `qq_plot.png` berisi visualisasi.
