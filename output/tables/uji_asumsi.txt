@@ -1,0 +1,21 @@
+UJI ASUMSI MODEL REGRESI BERGANDA
+
+Multikolinearitas dengan VIF:
+    Total_Purchases Average_Order_Value        Recency_Days 
+           1.000619            1.000133            1.000515 
+
+Normalitas residual dengan Shapiro-Wilk, sampel acak n = 5000 :
+
+	Shapiro-Wilk normality test
+
+data:  sampel_residu
+W = 0.21583, p-value < 2.2e-16
+
+
+Heteroskedastisitas dengan Breusch-Pagan:
+
+	studentized Breusch-Pagan test
+
+data:  model_berganda
+BP = 1992.3, df = 3, p-value < 2.2e-16
+

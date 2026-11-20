@@ -1,0 +1,19 @@
+Render laporan UAS Statistik - analisis RFM e-commerce Brasil
+Tanggal render: 2026-11-20
+
+Perintah:
+  Rscript -e "rmarkdown::render('laporan/laporan.Rmd')"
+
+Lokasi Rscript:
+  C:/Program Files/R/R-4.6.2/bin/x64/Rscript.exe
+
+Status: berhasil
+Output: laporan/laporan.pdf
+
+Verifikasi isi PDF memakai pdftotext:
+  - Bab 2 menyebut https://www.kaggle.com/datasets/mehmetisik/order-customerrfm
+  - Bab 2 menyebut 95.420 pelanggan, 112.650 transaksi, dan 98.666 order
+  - Model berganda tercantum dengan R-squared 0,9831
+  - Uji Shapiro-Wilk tercantum dengan W = 0,21583
+
+Catatan: seluruh angka laporan dibaca dari output/tables/ hasil R/analysis.R.
