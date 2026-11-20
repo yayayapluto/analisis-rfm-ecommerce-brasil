@@ -1,17 +1,24 @@
-REGRESI LOG(Y) TANPA X2: log(Monetary_Value) ~ Total_Purchases + Recency_Days
+REGRESI LOG(Y) TANPA X2
+Formula: log(Monetary_Value) ~ Total_Purchases + Recency_Days
 
-Call: lm(formula = log(Monetary_Value) ~ Total_Purchases + Recency_Days)
+
+Call:
+lm(formula = log(Monetary_Value) ~ Total_Purchases + Recency_Days, 
+    data = data_bersih)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.3119 -0.6094  0.0233  0.5598  5.0586 
 
 Coefficients:
-                  Estimate Std. Error t value Pr(>|t|)  Std.Err HC1 Pr(>|t|) HC1
-  (Intercept)                  3.8283     0.0159   240.80 0              0.0309 0
-  Total_Purchases              0.6298     0.0143    44.15 0              0.0293 1.49e-102
-  Recency_Days                -0.0000     0.0000    -1.60 0.11           0.0000 0.118
+                  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      3.828e+00  1.590e-02 240.803   <2e-16 ***
+Total_Purchases  6.298e-01  1.426e-02  44.150   <2e-16 ***
+Recency_Days    -3.141e-05  1.967e-05  -1.597     0.11    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Residual standard error: 0.9305 on 95417 degrees of freedom
-Multiple R-squared: 0.020087, Adjusted R-squared: 0.020066
-F-statistic: 978.0 on 2 and 95417 DF, p-value: 0
+Multiple R-squared:  0.02009,	Adjusted R-squared:  0.02007 
+F-statistic:   978 on 2 and 95417 DF,  p-value: < 2.2e-16
 
-Catatan: dihitung dengan OLS Python (numpy) di VM ini karena R tidak tersedia;
-angka diverifikasi cocok dengan output R untuk model Y~X1 dan Y~X1+X2+X3
-sampai 4 desimal. Jalankan ulang R/analysis.R di RStudio untuk output R asli.

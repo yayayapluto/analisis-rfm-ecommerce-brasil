@@ -3,6 +3,21 @@ Sumber data: data/raw/order_customer.csv
 Data mentah berupa transaksi level order-item, lalu diagregasi per pelanggan.
 Seluruh nilai memakai satuan dataset tanpa simbol mata uang.
 
+
+Struktur data mentah:
+'data.frame':	112650 obs. of  5 variables:
+ $ order_id                : chr  "00e7ee1b050b8499577073aeb2a297a1" "29150127e6685892b6eab3eec79f59c7" "b2059ed67ce144a36e2aa97d2c9e9ad2" "951670f92359f4fe4a63112aa7306eba" ...
+ $ customer_unique_id      : chr  "861eff4711a542e4b93843c6dd7febb0" "290c77bc529b7ac935b93aa66c333dc3" "060e732b5b29e8181a18229c7b0b2b5e" "259dac757896d24d7702b9acbbff3f3c" ...
+ $ order_purchase_timestamp: chr  "2017-05-16 15:05:35" "2018-01-12 20:48:24" "2018-05-19 16:07:45" "2018-03-13 16:06:38" ...
+ $ price                   : num  125 289 140 150 230 ...
+ $ tanggal                 : Date, format: "2017-05-16" "2018-01-12" ...
+NULL
+
+Tipe tiap kolom:
+                order_id       customer_unique_id order_purchase_timestamp 
+             "character"              "character"              "character" 
+                   price                  tanggal 
+               "numeric"                   "Date" 
 Baris transaksi order-item: 112650 
 Order unik: 98666 
 Pelanggan unik: 95420 
@@ -46,6 +61,19 @@ Total_Purchases          -0.0224
 Average_Order_Value       0.0040
 Recency_Days              1.0000
 Tersimpan: output/tables/korelasi.csv
+
+Korelasi Spearman (pembanding Pearson, tahan terhadap outlier)
+                    Monetary_Value Total_Purchases Average_Order_Value
+Monetary_Value              1.0000          0.1464              0.9893
+Total_Purchases             0.1464          1.0000              0.0114
+Average_Order_Value         0.9893          0.0114              1.0000
+Recency_Days               -0.0101         -0.0187             -0.0076
+                    Recency_Days
+Monetary_Value           -0.0101
+Total_Purchases          -0.0187
+Average_Order_Value      -0.0076
+Recency_Days              1.0000
+Tersimpan: output/tables/korelasi_spearman.csv
 
 Scatter plot
 Tersimpan: output/plots/scatter_purchases_y.png
@@ -103,6 +131,59 @@ Tersimpan: output/tables/regresi_berganda.txt
 R-squared model berganda: 0.983129
 R-squared adjusted model berganda: 0.983128
 
+Model pembanding tanpa X2 (bukti identitas aljabar)
+X2 = Y / X1, jadi R-squared tinggi model berganda bisa berasal dari
+definisi X2, bukan kemampuan prediksi. Model Y ~ X1 + X3 menguji ini.
+
+Call:
+lm(formula = Monetary_Value ~ Total_Purchases + Recency_Days, 
+    data = data_bersih)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1047.2   -93.2   -51.9    11.7 13300.8 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)     2.832e+01  3.698e+00   7.659 1.89e-14 ***
+Total_Purchases 1.093e+02  3.318e+00  32.937  < 2e-16 ***
+Recency_Days    4.616e-03  4.576e-03   1.009    0.313    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 216.4 on 95417 degrees of freedom
+Multiple R-squared:  0.01124,	Adjusted R-squared:  0.01122 
+F-statistic: 542.5 on 2 and 95417 DF,  p-value: < 2.2e-16
+
+
+R-squared model tanpa X2: 0.011242 (bandingkan dengan 0.983129 model berganda)
+Tersimpan: output/tables/regresi_tanpa_x2.txt
+
+Model log(Y) sebagai pemeriksaan sensitivitas asumsi
+
+Call:
+lm(formula = log(Monetary_Value) ~ Total_Purchases + Recency_Days, 
+    data = data_bersih)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.3119 -0.6094  0.0233  0.5598  5.0586 
+
+Coefficients:
+                  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      3.828e+00  1.590e-02 240.803   <2e-16 ***
+Total_Purchases  6.298e-01  1.426e-02  44.150   <2e-16 ***
+Recency_Days    -3.141e-05  1.967e-05  -1.597     0.11    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9305 on 95417 degrees of freedom
+Multiple R-squared:  0.02009,	Adjusted R-squared:  0.02007 
+F-statistic:   978 on 2 and 95417 DF,  p-value: < 2.2e-16
+
+
+Tersimpan: output/tables/regresi_log.txt
+
 Uji asumsi
 Multikolinearitas dengan VIF:
     Total_Purchases Average_Order_Value        Recency_Days 
@@ -126,6 +207,14 @@ BP = 1992.3, df = 3, p-value < 2.2e-16
 
 
 Tersimpan: output/tables/uji_asumsi.txt
+
+Galat baku robust HC1 untuk model berganda (base R, tanpa paket baru)
+           prediktor      estimasi se_robust_hc1   t_robust      p_robust
+         (Intercept) -1.220762e+02  5.4119194788 -22.556909 2.264270e-112
+     Total_Purchases  1.202855e+02  5.1197397316  23.494450 1.032514e-121
+ Average_Order_Value  1.015019e+00  0.0033785141 300.433595  0.000000e+00
+        Recency_Days -6.682506e-04  0.0006819809  -0.979867  3.271543e-01
+Tersimpan: output/tables/uji_asumsi_robust.csv
 
 Prediksi tiga skenario
  skenario total_purchases average_order_value recency_days  prediksi
