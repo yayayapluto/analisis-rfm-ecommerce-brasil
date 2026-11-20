@@ -258,7 +258,7 @@ URL repo: https://github.com/yayayapluto/analisis-rfm-ecommerce-brasil
 - [x] Angka di `README.md`, `RESULT.md`, `laporan/laporan.Rmd`, dan
       `presentasi/slide.md` cocok dengan output R.
 - [x] Tidak ada sisa nama dataset, path, atau klaim lama di dokumentasi.
-- [ ] `git status --short` bersih dan `main` sudah sinkron dengan remote. (Belum: masih ada perubahan di branch `fix/perbaikan-uas` yang disiapkan untuk MR.)
+- [x] `git status --short` bersih dan `main` sudah sinkron dengan remote. (Diverifikasi 2026-11-20: PR #2 dan #3 sudah merge, `main` lokal sinkron dengan remote.)
 - [x] URL repo publik mengembalikan status HTTP 200. (Diverifikasi 2026-11-20.)
 
 Untuk langkah teknis membuka proyek di RStudio, lihat `README.md` bagian 4.1.

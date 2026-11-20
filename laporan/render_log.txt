@@ -5,15 +5,20 @@ Perintah:
   Rscript -e "rmarkdown::render('laporan/laporan.Rmd')"
 
 Lokasi Rscript:
-  C:/Program Files/R/R-4.6.2/bin/x64/Rscript.exe
+  /usr/bin/Rscript (R 4.3.3) di VM ini, dengan TinyTeX (pdflatex TeX Live 2026)
 
 Status: berhasil
-Output: laporan/laporan.pdf
+Output: laporan/laporan.pdf (9 halaman)
 
 Verifikasi isi PDF memakai pdftotext:
   - Bab 2 menyebut https://www.kaggle.com/datasets/mehmetisik/order-customerrfm
   - Bab 2 menyebut 95.420 pelanggan, 112.650 transaksi, dan 98.666 order
   - Model berganda tercantum dengan R-squared 0,9831
   - Uji Shapiro-Wilk tercantum dengan W = 0,21583
+  - Bab 4 memuat Tabel 4.2 korelasi Spearman (Y-X2 0,989)
+  - Bab 5 memuat Tabel 5.2 model pembanding tanpa X2 (R-squared 0,0112)
+  - Bab 6 memuat Tabel 6.2 galat baku robust HC1 dan model log(Y) (R-squared 0,0201, BP LM 19,6)
 
-Catatan: seluruh angka laporan dibaca dari output/tables/ hasil R/analysis.R.
+Catatan: seluruh angka laporan dibaca dari output/tables/ hasil R/analysis.R
+atau dihitung ulang dari data di dalam laporan (model tanpa X2, model log,
+uji robust) — tidak ada nilai regresi yang ditulis manual.
