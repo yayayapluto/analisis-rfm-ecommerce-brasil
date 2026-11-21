@@ -20,7 +20,7 @@ Kolom berkas mentah:
 | `order_id` | Identitas order |
 | `customer_unique_id` | Identitas pelanggan |
 | `order_purchase_timestamp` | Waktu pembelian |
-| `price` | Harga item pada baris transaksi |
+| `price` | Harga item pada baris transaksi, dalam real Brasil (BRL, R$) |
 
 ## Variabel model
 
@@ -28,9 +28,9 @@ Tabel hasil agregasi memakai satu baris per `customer_unique_id`.
 
 | Peran | Variabel | Keterangan |
 |---|---|---|
-| Y | `Monetary_Value` | Penjumlahan `price` per pelanggan |
+| Y | `Monetary_Value` | Penjumlahan `price` per pelanggan, dalam real Brasil (BRL, R$) |
 | X1 | `Total_Purchases` | Jumlah `order_id` unik per pelanggan |
-| X2 | `Average_Order_Value` | `Monetary_Value` dibagi `Total_Purchases` |
+| X2 | `Average_Order_Value` | `Monetary_Value` dibagi `Total_Purchases`, dalam real Brasil (BRL, R$) |
 | X3 | `Recency_Days` | Selisih hari antara transaksi terakhir pelanggan dan 2018-09-03 |
 
 ## Pra-pengolahan
@@ -48,5 +48,4 @@ dengan harga sama pada satu order.
 
 ## Satuan dan wilayah
 
-Seluruh nilai memakai satuan dataset tanpa simbol mata uang. Transaksi berasal
-dari e-commerce Brasil, bukan Indonesia.
+Seluruh nilai uang memakai real Brasil (BRL, R$), mata uang Brasil. Transaksi berasal dari e-commerce Brasil, bukan Indonesia.

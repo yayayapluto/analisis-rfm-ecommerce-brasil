@@ -43,8 +43,7 @@ diubah sebagai berikut.
 4. Jumlah transaksi cukup besar untuk estimasi regresi berganda.
 5. Pemilik dan tanggal pembaruan dataset tercantum supaya versi data bisa
    dilacak.
-6. Proyek tidak mengklaim data sebagai transaksi Indonesia. Satuan nilai
-   mengikuti dataset tanpa simbol mata uang.
+6. Proyek tidak mengklaim data sebagai transaksi Indonesia. Seluruh nilai uang memakai real Brasil (BRL, R$).
 
 ---
 

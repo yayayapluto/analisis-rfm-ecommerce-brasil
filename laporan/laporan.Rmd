@@ -98,9 +98,9 @@ bp <- as.numeric(sub("^BP = ([0-9.]+).*", "\\1", baris_bp))
 df_bp <- as.numeric(sub(".*df = ([0-9]+).*", "\\1", baris_bp))
 
 label_var <- c(
-  Monetary_Value = "Y: Monetary Value",
+  Monetary_Value = "Y: Monetary Value (R$)",
   Total_Purchases = "X1: Total Purchases",
-  Average_Order_Value = "X2: Average Order Value",
+  Average_Order_Value = "X2: Average Order Value (R$)",
   Recency_Days = "X3: Recency Days"
 )
 
@@ -211,7 +211,7 @@ Laporan ini menganalisis hubungan antara nilai transaksi pelanggan dan tiga
 ukuran perilaku belanja pada *Brazil E-commerce Orders Dataset*. Dataset ini
 berasal dari Kaggle dan berisi transaksi e-commerce Brasil. Unit analisis bukan
 individualitas transaksi, melainkan pelanggan. Nilai transaksi per pelanggan
-menjadi variabel respons `Monetary_Value`. Prediktornya adalah
+menjadi variabel respons `Monetary_Value`. Seluruh nilai uang dalam laporan ini memakai real Brasil (BRL, R$), mata uang Brasil. Prediktornya adalah
 `Total_Purchases` sebagai X1, `Average_Order_Value` sebagai X2, dan
 `Recency_Days` sebagai X3.
 
@@ -226,12 +226,12 @@ Data diperoleh dari `r url_sumber`. Metadata Kaggle mencantumkan lisensi
 `r lisensi` dan pembaruan terakhir `r tanggal_verifikasi`. Berkas mentah
 memuat `r fmt(baris_transaksi)` baris transaksi level order-item,
 `r fmt(order_unik)` order unik, dan empat kolom, yaitu `order_id`,
-`customer_unique_id`, `order_purchase_timestamp`, dan `price`.
+`customer_unique_id`, `order_purchase_timestamp`, dan `price` (harga item dalam real Brasil, BRL).
 
 Pipeline mengubah data transaksi menjadi satu baris per pelanggan.
 `Total_Purchases` dihitung dari jumlah `order_id` unik.
-`Monetary_Value` merupakan penjumlahan `price` per pelanggan.
-`Average_Order_Value` adalah `Monetary_Value` dibagi `Total_Purchases`.
+`Monetary_Value` merupakan penjumlahan `price` per pelanggan, dalam real Brasil (BRL, R$).
+`Average_Order_Value` adalah `Monetary_Value` dibagi `Total_Purchases`, juga dalam real Brasil (BRL, R$).
 `Recency_Days` adalah selisih hari antara tanggal transaksi terakhir tiap
 pelanggan dengan tanggal referensi `r tanggal_referensi`.
 
@@ -251,7 +251,7 @@ tabel hasil agregasi, bukan pada baris transaksi mentah.
 
 Tabel 3.1 merangkum statistik deskriptif dari
 `output/tables/statistik_deskriptif.csv`. Nilai ditampilkan dengan pembulatan,
-sedangkan perhitungan memakai nilai asli.
+sedangkan perhitungan memakai nilai asli. Nilai uang (Y dan X2) memakai real Brasil (R$).
 
 ```{r}
 knitr::kable(
@@ -261,16 +261,13 @@ knitr::kable(
 )
 ```
 
-`Monetary_Value` memiliki rataan `r fmt(y$mean, 2)` dan median
-`r fmt(y$median, 2)`. Simpangan baku `r fmt(y$sd, 2)` jauh lebih besar daripada
-rataan, dengan nilai maksimum `r fmt(y$max, 2)`. Histogram pada Gambar 3.1
+`Monetary_Value` memiliki rataan R$ `r fmt(y$mean, 2)` dan median R$ `r fmt(y$median, 2)`. Simpangan baku R$ `r fmt(y$sd, 2)` jauh lebih besar daripada rataan, dengan nilai maksimum R$ `r fmt(y$max, 2)`. Histogram pada Gambar 3.1
 menunjukkan ekor kanan yang panjang.
 
 `Total_Purchases` memiliki rataan `r fmt(x1$mean, 2)` dan median
 `r fmt(x1$median, 0)`. Nilai minimum `r fmt(x1$min, 0)` dan maksimum
 `r fmt(x1$max, 0)` menunjukkan bahwa sebagian besar pelanggan hanya memiliki
-satu order. `Average_Order_Value` memiliki rataan `r fmt(x2$mean, 2)` dan nilai
-maksimum `r fmt(x2$max, 2)`. `Recency_Days` memiliki rataan
+satu order. `Average_Order_Value` memiliki rataan R$ `r fmt(x2$mean, 2)` dan nilai maksimum R$ `r fmt(x2$max, 2)`. `Recency_Days` memiliki rataan
 `r fmt(x3$mean, 2)` dengan rentang `r fmt(x3$min, 0)` sampai
 `r fmt(x3$max, 0)` hari.
 
@@ -346,7 +343,7 @@ sebagian observasi lain.
 
 # Bab 5 Analisis Regresi
 
-Model sederhana memakai `Total_Purchases` sebagai satu-satunya prediktor.
+Model sederhana memakai `Total_Purchases` sebagai satu-satunya prediktor. Intercept dan koefisien model memakai real Brasil (R$), kecuali koefisien X2 (R$ per R$) dan koefisien X3 (R$ per hari).
 Persamaannya adalah `Monetary_Value` prediksi = `r fmt(b0_sederhana, 3)` +
 `r fmt(b1_sederhana, 3)` X1. Nilai R-squared sebesar `r fmt(r2_sederhana, 4)`
 berarti sekitar `r fmt(r2_sederhana * 100, 2)` persen variasi
@@ -369,9 +366,9 @@ knitr::kable(
 )
 ```
 
-Koefisien X1 pada model berganda sebesar `r fmt(b1, 3)` dan koefisien X2 sebesar
-`r fmt(b2, 3)`. Keduanya signifikan dengan p-value `r fmt_p(p1)` dan
-`r fmt_p(p2)`. Koefisien X3 sebesar `r fmt(b3, 4)` dengan p-value
+Koefisien X1 pada model berganda sebesar R$ `r fmt(b1, 3)` per order dan koefisien X2 sebesar
+`r fmt(b2, 3)` (R$ per R$). Keduanya signifikan dengan p-value `r fmt_p(p1)` dan
+`r fmt_p(p2)`. Koefisien X3 sebesar R$ `r fmt(b3, 4)` per hari dengan p-value
 `r fmt_p(p3)`, sehingga tidak signifikan pada taraf 5 persen. Tanda negatif X3
 menunjukkan arah asosiasi bersyarat yang lemah setelah X1 dan X2 dikendalikan.
 Hubungan ini bukan sebab akibat.
@@ -455,7 +452,7 @@ Interval yang ditampilkan adalah interval kepercayaan 95 persen untuk rataan
 ```{r}
 knitr::kable(
   prediksi_tampil,
-  caption = "Tabel 7.1 Prediksi Monetary Value pada tiga skenario",
+  caption = "Tabel 7.1 Prediksi Monetary Value (R$) pada tiga skenario",
   align = c("l", "r", "r", "r", "r", "r", "r")
 )
 ```
@@ -463,8 +460,8 @@ knitr::kable(
 Skenario Rendah memakai X1 = `r fmt(prediksi$total_purchases[1], 0)`,
 X2 = `r fmt(prediksi$average_order_value[1], 2)`, dan X3 =
 `r fmt(prediksi$recency_days[1], 0)`. Skenario Menengah menaikkan ketiga nilai
-ke median. Skenario Tinggi memakai kuartil ketiga. Prediksi naik dari
-`r fmt(prediksi$prediksi[1], 2)` menjadi `r fmt(prediksi$prediksi[3], 2)`.
+ke median. Skenario Tinggi memakai kuartil ketiga. Prediksi naik dari R$
+`r fmt(prediksi$prediksi[1], 2)` menjadi R$ `r fmt(prediksi$prediksi[3], 2)`.
 Kenaikan ini mengikuti koefisien X1 dan X2 yang positif, sedangkan koefisien X3
 yang negatif tidak signifikan.
 
@@ -490,7 +487,7 @@ dari Y. Model pembanding tanpa X2 menegaskan hal itu: R-squared-nya
 
 Keterbatasan utama adalah pelanggaran normalitas dan homoskedastisitas residual,
 serta ketergantungan aljabar antara respons dan X2. Selain itu, dataset berasal
-dari transaksi Brasil, bukan Indonesia, dan hubungan yang ditemukan merupakan
+dari transaksi Brasil, bukan Indonesia, seluruh nilai uang memakai real Brasil (BRL, R$), dan hubungan yang ditemukan merupakan
 asosiasi. Prediksi hanya mencakup tiga kombinasi kuartil, bukan seluruh rentang
 nilai prediktor.
 
