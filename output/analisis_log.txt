@@ -1,7 +1,7 @@
 Analisis regresi data pesanan e-commerce Brasil
 Sumber data: data/raw/order_customer.csv
 Data mentah berupa transaksi level order-item, lalu diagregasi per pelanggan.
-Seluruh nilai memakai satuan dataset tanpa simbol mata uang.
+Seluruh nilai uang dalam real Brasil (BRL, R$).
 
 
 Struktur data mentah:

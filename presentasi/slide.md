@@ -81,7 +81,7 @@ Setiap slide memuat isi layar dan catatan demo. Path gambar dihitung relatif dar
 | X2 | `Average_Order_Value` | Y dibagi X1 |
 | X3 | `Recency_Days` | Hari sejak transaksi terakhir |
 
-- Satu unit angka mengikuti satuan dataset, bukan rupiah.
+- Semua nilai uang dalam real Brasil (BRL, R$), bukan rupiah.
 - X2 memiliki ketergantungan aljabar dengan Y, sehingga koefisien dan R² perlu dibaca dengan batasan itu.
 
 **Catatan demo**
@@ -96,7 +96,7 @@ Setiap slide memuat isi layar dan catatan demo. Path gambar dihitung relatif dar
 **Isi slide**
 
 - Statistik deskriptif dihitung untuk Y, X1, X2, dan X3 pada sampel final n = 95.420.
-- `Monetary_Value`: rataan 142,44; median 89,90; simpangan baku 217,66; maksimum 13.440.
+- `Monetary_Value`: rataan R$ 142,44; median R$ 89,90; simpangan baku R$ 217,66; maksimum R$ 13.440.
 - `Total_Purchases`: rataan 1,03; median 1; maksimum 16.
 - `Recency_Days`: rataan 243,50; median 224; rentang 0 sampai 729.
 - Tabel lengkap tersaji di `output/tables/statistik_deskriptif.csv`.
@@ -147,7 +147,7 @@ Setiap slide memuat isi layar dan catatan demo. Path gambar dihitung relatif dar
 - Model: Y = 29,523 + 109,202 X1.
 - Slope X1 = 109,202; intercept = 29,523.
 - R² = 0,0112, sehingga model menjelaskan sekitar 1,12% variasi `Monetary_Value`.
-- Setiap tambahan satu order unik berhubungan dengan tambahan 109,202 unit nilai dataset.
+- Setiap tambahan satu order unik berhubungan dengan tambahan R$ 109,202.
 
 **Catatan demo**
 
@@ -165,6 +165,7 @@ Setiap slide memuat isi layar dan catatan demo. Path gambar dihitung relatif dar
 - Model berganda signifikan secara keseluruhan dengan F = 1.853.402.
 - X1 dan X2 signifikan, sedangkan X3 tidak signifikan dengan p-value 0,264.
 - R² naik dari 0,0112 menjadi 0,9831 setelah X2 dan X3 masuk, terutama karena X2 diturunkan dari Y.
+- Intercept dan koefisien memakai R$ (X2: R$ per R$, X3: R$ per hari).
 
 **Catatan demo**
 
@@ -182,7 +183,7 @@ Setiap slide memuat isi layar dan catatan demo. Path gambar dihitung relatif dar
 - Shapiro-Wilk: W = 0,21583 dan p < 2,2e-16. Breusch-Pagan: BP = 1992,3 dan p < 2,2e-16.
 - Prediksi dihitung dari model berganda dengan interval kepercayaan 95%.
 
-| Skenario | X1 | X2 | X3 | Prediksi Y |
+| Skenario | X1 | X2 (R$) | X3 | Prediksi Y (R$) |
 |---|---:|---:|---:|---:|
 | Rendah | 1 | 46,40 | 119 | 45,23 |
 | Menengah | 1 | 87,38 | 224 | 86,75 |
@@ -227,6 +228,7 @@ Setiap slide memuat isi layar dan catatan demo. Path gambar dihitung relatif dar
 - **Apakah X3 penting?** Tidak pada model ini. Korelasi Y-X3 sebesar 0,001 dan p-value koefisien X3 sebesar 0,264.
 - **Apakah model berganda layak?** Model signifikan secara keseluruhan dengan R² = 0,9831, tetapi angka itu mengandung identitas aljabar dan asumsi residual dilanggar.
 - **Apakah datanya berasal dari Indonesia?** Tidak. Dataset mencatat transaksi e-commerce Brasil.
+- **Mata uangnya apa?** Real Brasil (BRL, R$), bukan rupiah. Rataan Y = R$ 142,44.
 - **Bolehkah angka prediksi dipakai?** Sebagai ilustrasi model, ya. Batas interval 95% dan tiga skenario tersaji di `prediksi.csv`, dengan interpretasi yang dibatasi oleh definisi X2 dan hasil uji asumsi.
 
 **Catatan demo**

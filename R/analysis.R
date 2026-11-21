@@ -13,7 +13,7 @@ sink(log_file, split = TRUE)
 cat("Analisis regresi data pesanan e-commerce Brasil\n")
 cat("Sumber data: data/raw/order_customer.csv\n")
 cat("Data mentah berupa transaksi level order-item, lalu diagregasi per pelanggan.\n")
-cat("Seluruh nilai memakai satuan dataset tanpa simbol mata uang.\n\n")
+cat("Seluruh nilai uang dalam real Brasil (BRL, R$).\n\n")
 
 data_order <- read.csv(
   "data/raw/order_customer.csv",
@@ -256,7 +256,7 @@ for (p in pasangan_scatter) {
     labs(
       title = p$judul,
       x = p$label,
-      y = "Monetary Value (Y)"
+      y = "Monetary Value (Y, R$)"
     ) +
     theme_minimal(base_size = 11)
 
@@ -481,7 +481,7 @@ plot_hist <- ggplot(data_bersih, aes(x = Monetary_Value)) +
   ) +
   labs(
     title = "Distribusi Monetary Value",
-    x = "Monetary Value (Y)",
+    x = "Monetary Value (Y, R$)",
     y = "Frekuensi"
   ) +
   theme_minimal(base_size = 11)
@@ -502,7 +502,7 @@ plot_box <- ggplot(data_bersih, aes(y = Monetary_Value)) +
   ) +
   labs(
     title = "Boxplot Monetary Value",
-    y = "Monetary Value (Y)"
+    y = "Monetary Value (Y, R$)"
   ) +
   theme_minimal(base_size = 11)
 ggsave(

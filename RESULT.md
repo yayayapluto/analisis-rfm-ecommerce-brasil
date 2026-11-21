@@ -5,14 +5,13 @@ Halaman ini merangkum hasil pipeline `R/analysis.R`. Sumber datanya adalah
 Dataset*. Berkas mentah memuat 112.650 baris transaksi level order-item, 98.666
 order unik, dan 95.420 pelanggan. Pipeline mengagregasi transaksi menjadi satu
 baris per pelanggan. Penyaringan `NA` tidak membuang baris, begitu pula
-pemeriksaan duplikat. Baris final berjumlah 95.420. Seluruh nilai memakai satuan
-dataset tanpa simbol mata uang.
+pemeriksaan duplikat. Baris final berjumlah 95.420. Seluruh nilai uang memakai real Brasil (BRL, R$).
 
 Variabel yang dianalisis:
 
-- `Y` = `Monetary_Value`, total `price` per pelanggan
+- `Y` = `Monetary_Value`, total `price` per pelanggan, dalam real Brasil (BRL, R$)
 - `X1` = `Total_Purchases`, jumlah `order_id` unik per pelanggan
-- `X2` = `Average_Order_Value`, total nilai dibagi jumlah order
+- `X2` = `Average_Order_Value`, total nilai dibagi jumlah order, dalam real Brasil (BRL, R$)
 - `X3` = `Recency_Days`, selisih hari dari transaksi terakhir ke 2018-09-03
 
 ## 1. Ringkasan pipeline
@@ -36,8 +35,7 @@ Variabel yang dianalisis:
 
 ![Distribusi Monetary Value](assets/g1_distribusi_monetary_value.png)
 
-Rataan `Monetary_Value` sebesar 142,44 dan median 89,90. Simpangan baku 217,66
-jauh lebih besar daripada rataan, dengan nilai maksimum 13.440. Histogram
+Rataan `Monetary_Value` sebesar R$ 142,44 dan median R$ 89,90. Simpangan baku R$ 217,66 jauh lebih besar daripada rataan, dengan nilai maksimum R$ 13.440. Histogram
 menunjukkan ekor kanan yang panjang, sehingga rataan lebih tinggi daripada
 median.
 
@@ -46,8 +44,8 @@ median.
 ![Boxplot Monetary Value](assets/g2_boxplot_monetary_value.png)
 
 Boxplot menegaskan konsentrasi nilai pada kisaran kuartil pertama sampai kuartil
-ketiga, yaitu 47,90 sampai 155,00. Titik-titik di atas whisker membentuk ekor
-kanan. Median 89,90 berada di bawah rataan karena sejumlah pelanggan memiliki
+ketiga, yaitu R$ 47,90 sampai R$ 155,00. Titik-titik di atas whisker membentuk ekor
+kanan. Median R$ 89,90 berada di bawah rataan karena sejumlah pelanggan memiliki
 total transaksi jauh di atas kebanyakan pelanggan lain.
 
 ### G3: `Total_Purchases` terhadap `Monetary_Value`
@@ -93,6 +91,8 @@ Shapiro-Wilk atas 5.000 residual acak menghasilkan `W = 0,21583` dan
 `p-value < 2,2e-16`, sehingga normalitas residual ditolak.
 
 ## 3. Statistik deskriptif
+
+Nilai uang (Y dan X2) dalam tabel ini memakai real Brasil (BRL, R$).
 
 | Variabel | Rataan | Median | Modus | Varians | SD | Minimum | Q1 | Q3 | Maksimum |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -145,6 +145,8 @@ hubungan monoton yang sangat lemah, bukan hubungan linear yang berarti.
 | `Y ~ X1` | 29,523 | 109,202 | | | 0,0112 | 0,0112 |
 | `Y ~ X1 + X2 + X3` | -122,076 | 120,285 | 1,015 | -0,001 | 0,9831 | 0,9831 |
 
+Intercept dan koefisien X1 pada tabel di atas memakai R$; koefisien X2 memakai R$ per R$ dan koefisien X3 memakai R$ per hari.
+
 Model sederhana menjelaskan 1,12 persen variasi `Monetary_Value`. Penambahan
 `X2` dan `X3` menaikkan R² menjadi 98,31 persen. Kenaikan ini terutama mengikuti
 identitas aljabar `X2 = Y / X1`, bukan kemampuan prediksi di luar cara X2
@@ -193,7 +195,7 @@ pelanggaran asumsi.
 
 ## 7. Prediksi tiga skenario
 
-| Skenario | `Total_Purchases` | `Average_Order_Value` | `Recency_Days` | Prediksi | Batas bawah 95% | Batas atas 95% |
+| Skenario | `Total_Purchases` | `Average_Order_Value` (R$) | `Recency_Days` | Prediksi (R$) | Batas bawah 95% (R$) | Batas atas 95% (R$) |
 |---|---:|---:|---:|---:|---:|---:|
 | Rendah | 1 | 46,40 | 119 | 45,23 | 44,98 | 45,47 |
 | Menengah | 1 | 87,38 | 224 | 86,75 | 86,57 | 86,94 |

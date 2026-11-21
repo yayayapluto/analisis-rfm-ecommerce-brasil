@@ -177,9 +177,9 @@ Script memakai base R untuk agregasi, pembacaan, dan penulisan CSV, `ggplot2` un
 - **Sumber data**: *Brazil E-commerce Orders Dataset*, Kaggle `mehmetisik/order-customerrfm`, pembaruan terakhir 2023-06-09. Halaman dataset mencantumkan lisensi `Unknown`.
 - **Unit analisis**: pelanggan, bukan baris transaksi. Agregasi menghasilkan 95.420 pelanggan dari 112.650 baris transaksi dan 98.666 order unik.
 - **Variabel model**
-  - `Y` = `Monetary_Value`, total `price` per pelanggan.
+  - `Y` = `Monetary_Value`, total `price` per pelanggan, dalam real Brasil (BRL, R$).
   - `X1` = `Total_Purchases`, jumlah `order_id` unik per pelanggan.
-  - `X2` = `Average_Order_Value`, `Monetary_Value` dibagi `X1`.
+  - `X2` = `Average_Order_Value`, `Monetary_Value` dibagi `X1`, dalam real Brasil (BRL, R$).
   - `X3` = `Recency_Days`, selisih hari antara transaksi terakhir pelanggan dan 2018-09-03.
 - **Penyaringan**: 0 baris dibuang karena `NA`, 0 baris duplikat dibuang, 95.420 baris final. Baris transaksi identik tetap dihitung saat agregasi karena berkas mentah tidak memuat identitas produk.
 - **Korelasi kunci**: kor(Y, X1) = 0,106; kor(Y, X2) = 0,985; kor(Y, X3) = 0,001.
@@ -187,7 +187,7 @@ Script memakai base R untuk agregasi, pembacaan, dan penulisan CSV, `ggplot2` un
 - **Model berganda** `Y ~ X1 + X2 + X3`: intercept -122,076; X1 120,285; X2 1,015; X3 -0,001; R² 0,9831; adjusted R² 0,9831. X3 tidak signifikan dengan p-value 0,264.
 - **Catatan penting**: X2 diturunkan dari Y dibagi X1. Hubungan X2 dengan Y memuat identitas aljabar, sehingga R² model berganda tidak boleh dibaca sebagai kemampuan prediksi umum.
 - **Uji asumsi**: VIF berada di sekitar 1, sedangkan Shapiro-Wilk dan Breusch-Pagan menolak normalitas serta homoskedastisitas residual.
-- **Wilayah data**: transaksi berasal dari e-commerce Brasil, bukan Indonesia. Seluruh nilai memakai satuan dataset tanpa simbol mata uang.
+- **Wilayah data**: transaksi berasal dari e-commerce Brasil, bukan Indonesia. Seluruh nilai uang memakai real Brasil (BRL, R$).
 
 ---
 
